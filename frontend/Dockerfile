@@ -1,15 +1,15 @@
-# Dockerfile
 FROM node:18-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the source code
+# Copy all remaining files
 COPY . .
 
-# Run unit tests
-CMD ["npm", "test"]
+# Run tests
+CMD ["npm", "test", "--", "--watchAll=false"]
