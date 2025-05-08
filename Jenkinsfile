@@ -1,24 +1,25 @@
 pipeline {
     agent {
         dockerfile {
-            filename 'frontend/Dockerfile' // Path to your Dockerfile
-            additionalBuildArgs '--no-cache' // Optional: Force a clean build
+            filename 'frontend/Dockerfile'
+            additionalBuildArgs '--no-cache'
         }
     }
 
     environment {
-        CI = 'true'
+        CI = 'true'  // Tells React to treat this as CI for proper test handling
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh 'npm ci'  // 'ci' is faster and more reliable for CI
             }
         }
-        stage('Run Tests') {
+
+        stage('Run Unit Tests') {
             steps {
-                sh 'npm test'
+                sh 'npm test -- --watchAll=false'  // Avoid interactive prompts in CI
             }
         }
     }
