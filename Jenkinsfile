@@ -1,8 +1,8 @@
 pipeline {
     agent {
         dockerfile {
-            filename 'frontend/Dockerfile'
-            dir 'frontend' // Make sure Docker context is the same as where Dockerfile + package.json exist
+            filename 'Dockerfile'
+            dir 'frontend' // ✅ Only one 'frontend'
             additionalBuildArgs '--no-cache'
         }
     }
