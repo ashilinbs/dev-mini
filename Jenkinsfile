@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        label 'ubuntu' // Replace with your Ubuntu node label
+        dockerfile {
+            filename 'frontend/Dockerfile' // Path to your Dockerfile
+            additionalBuildArgs '--no-cache' // Optional: Force a clean build
+        }
     }
 
     environment {
@@ -8,44 +11,15 @@ pipeline {
     }
 
     stages {
-        stage('Run in Docker') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '-v $HOME/.npm:/root/.npm' // Cache npm modules
-                }
-            }
-            stages {
-                stage('Install Dependencies') {
-                    steps {
-                        sh 'npm install'
-                    }
-                }
-
-                stage('Run Tests') {
-                    steps {
-                        sh 'npm test'
-                    }
-                }
-
-                stage('Check Node Version') {
-                    steps {
-                        sh 'node -v && npm -v'
-                    }
-                }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
             }
         }
-    }
-
-    post {
-        always {
-            echo 'Pipeline completed.'
-        }
-        success {
-            echo 'All stages completed successfully.'
-        }
-        failure {
-            echo 'One or more stages failed.'
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'
+            }
         }
     }
 }
