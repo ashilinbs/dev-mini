@@ -1,8 +1,9 @@
 pipeline {
     agent {
         dockerfile {
-            filename 'frontend/Dockerfile' // Path to your Dockerfile
-            additionalBuildArgs '--no-cache' // Optional: Force a clean build
+            filename 'Dockerfile'
+            dir 'frontend' // ✅ Context set to frontend
+            additionalBuildArgs '--no-cache'
         }
     }
 
@@ -13,12 +14,17 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                dir('frontend') {
+                    sh 'npm install --loglevel=verbose'
+                }
             }
         }
+
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                dir('frontend') {
+                    sh 'npx jest --watchAll=false'
+                }
             }
         }
     }
