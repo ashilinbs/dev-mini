@@ -1,6 +1,9 @@
 # Use the official Node.js image with Alpine for a lightweight base
 FROM node:18-alpine
 
+# Install build tools required for some npm packages
+RUN apk add --no-cache python3 make g++
+
 # Set the working directory inside the container
 WORKDIR /app
 
