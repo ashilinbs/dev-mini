@@ -1,31 +1,39 @@
 pipeline {
-    agent {
-        dockerfile {
-            filename 'Dockerfile'
-            dir 'frontend' // ✅ Context set to frontend
-            additionalBuildArgs '--no-cache'
-        }
-    }
+    agent any
 
     environment {
-        CI = 'true'
+        CI = 'true' // Set CI environment variable for tools like Jest
     }
 
     stages {
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                dir('frontend') {
-                    sh 'npm install --loglevel=verbose'
+                script {
+                    // Build the Docker image using the Dockerfile
+                    sh 'docker build -t react-app-test -f frontend/Dockerfile .'
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Unit Tests') {
             steps {
-                dir('frontend') {
-                    sh 'npx jest --watchAll=false'
+                script {
+                    // Run the Docker container to execute unit tests
+                    sh 'docker run --rm react-app-test'
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
+        success {
+            echo 'All tests passed successfully!'
+        }
+        failure {
+            echo 'Some tests failed. Please check the logs.'
         }
     }
 }
